@@ -1,0 +1,10 @@
+*.pyc
+*.pyo
+*~
+# .idea/ holds all project wide ide settings
+workspace.xml
+bin/
+include/
+lib/
+local/
+man/
