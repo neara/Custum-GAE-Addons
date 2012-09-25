@@ -2,7 +2,7 @@ import unittest
 from google.appengine.api import datastore_errors
 
 from google.appengine.ext import testbed, ndb
-from CustomGAEAddons.cndb.properties import URLProperty
+from cndb.properties import URLProperty, ImgProperty
 
 class TestURLProperty(unittest.TestCase):
 
@@ -56,6 +56,26 @@ class TestURLProperty(unittest.TestCase):
         import requests
         req = requests.get(k.get().url)
         self.assertTrue(req.status_code == requests.codes.ok)
+
+
+class TestImgProperty(unittest.TestCase):
+    def setUp(self):
+        self.testbed = testbed.Testbed()
+        self.testbed.activate()
+        self.testbed.init_datastore_v3_stub()
+        self.testbed.init_memcache_stub()
+        self.testbed.init_images_stub()
+
+    def tearDown(self):
+        self.testbed.deactivate()
+
+    def test_creation(self):
+        class Model(ndb.Model):
+            img = ImgProperty()
+
+        m = Model(img='http://www.weareblahblahblah.com/wp-content/themes/blahblahblah/images/bbb-facebook-button.jpg')
+        k = m.put()
+        self.assertTrue(k.get() is not None)
 
 if __name__ == 'main':
     unittest.main()
