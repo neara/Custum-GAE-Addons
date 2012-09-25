@@ -1,8 +1,9 @@
+from types import StringType
 import unittest
 from google.appengine.api import datastore_errors
 
 from google.appengine.ext import testbed, ndb
-from cndb.properties import URLProperty, ImgProperty
+from properties import URLProperty, ImgProperty
 
 class TestURLProperty(unittest.TestCase):
 
@@ -76,6 +77,25 @@ class TestImgProperty(unittest.TestCase):
         m = Model(img='http://www.weareblahblahblah.com/wp-content/themes/blahblahblah/images/bbb-facebook-button.jpg')
         k = m.put()
         self.assertTrue(k.get() is not None)
+        self.assertTrue(type(k.get().img) is StringType)
+
+    def test_attributes(self):
+        class Model(ndb.Model):
+            img = ImgProperty(height=32, width=32)
+
+        m = Model(img='http://www.weareblahblahblah.com/wp-content/themes/blahblahblah/images/bbb-facebook-button.jpg')
+        k = m.put()
+        self.assertTrue(k.get() is not None)
+        self.assertTrue(type(k.get().img) is StringType)
+
+        class Model(ndb.Model):
+            img = ImgProperty(height=32)
+
+        m = Model(img='http://www.weareblahblahblah.com/wp-content/themes/blahblahblah/images/bbb-facebook-button.jpg')
+        k = m.put()
+        self.assertTrue(k.get() is not None)
+        self.assertTrue(type(k.get().img) is StringType)
+
 
 if __name__ == 'main':
     unittest.main()
