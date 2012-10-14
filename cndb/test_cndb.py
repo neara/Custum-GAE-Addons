@@ -3,7 +3,7 @@ import unittest
 from google.appengine.api import datastore_errors
 
 from google.appengine.ext import testbed, ndb
-from properties import URLProperty, ImgProperty
+from properties import URLProperty, ImgProperty, EmailProperty
 
 class TestURLProperty(unittest.TestCase):
 
@@ -95,6 +95,29 @@ class TestImgProperty(unittest.TestCase):
         k = m.put()
         self.assertTrue(k.get() is not None)
         self.assertTrue(type(k.get().img) is StringType)
+
+class TestEmailProperty(unittest.TestCase):
+    def setUp(self):
+        self.testbed = testbed.Testbed()
+        self.testbed.activate()
+        self.testbed.init_datastore_v3_stub()
+        self.testbed.init_memcache_stub()
+
+    def tearDown(self):
+        self.testbed.deactivate()
+
+    def test_creation(self):
+        class Model(ndb.Model):
+            email = EmailProperty()
+
+        with self.assertRaises(datastore_errors.BadValueError):
+            Model(email='google.com')
+
+        with self.assertRaises(datastore_errors.BadValueError):
+            Model(email='blah@12')
+
+        k = Model(email='blah@blah.com').put()
+        self.assertTrue(k is not None)
 
 
 if __name__ == 'main':
